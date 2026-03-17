@@ -41,21 +41,21 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef NULLCONN_H
-#define NULLCONN_H
-
+#pragma once
 
 /*
 ********************************* Includes **********************************
 */
 #include "noseqcon.h"
-#include "commlib.h"
+//#include "commlib.h"
+// Greenleaf proprietary header
+#include "network_stub.hpp"
 
 /*
 ********************************** Defines **********************************
 */
 #define	PACKET_SERIAL_START				0xDABD
-#define	PACKET_SERIAL_VERIFY				0xDEAF
+#define	PACKET_SERIAL_VERIFY			0xDEAF
 
 #define	PACKET_SERIAL_OVERHEAD_SIZE	(sizeof( SerialHeaderType ) + sizeof( SerialCRCType ))
 
@@ -133,8 +133,6 @@ class NullModemConnClass : public NonSequencedConnClass
 		.....................................................................*/
 		char *SendBuf;
 };
-
-#endif
 
 /************************** end of nullconn.h ******************************/
 

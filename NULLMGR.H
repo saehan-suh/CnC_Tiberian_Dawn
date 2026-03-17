@@ -37,16 +37,16 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef NULLMODEM_H
-#define NULLMODEM_H
-
+#pragma once
 
 /*
 ********************************* Includes **********************************
 */
 #include "nullconn.h"
 #include "connmgr.h"
-#include "commlib.h"
+//#include "commlib.h"
+// Greenleaf proprietary header
+#include "network_stub.hpp"
 
 /*
 ***************************** Class Declaration *****************************
@@ -213,5 +213,3 @@ class NullModemClass : public ConnManClass
 		int ReceiveOverflows;
 		int CRCErrors;
 };
-
-#endif

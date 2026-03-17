@@ -31,8 +31,7 @@
  *                                                                         * 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef PHONE_H
-#define PHONE_H
+#pragma once
 
 /*
 ***************************** Class Declaration *****************************
@@ -65,5 +64,3 @@ class PhoneEntryClass
 		char Name[ PHONE_MAX_NAME ];		// destination person's name
 		char Number[ PHONE_MAX_NUM ];		// phone #
 };
-
-#endif
