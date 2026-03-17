@@ -37,7 +37,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "function.h"
-#include "ccdde.h"
+
+//Commented out; defunct
+//#include "ccdde.h"
 
 /*****************************
 **	Function prototypes

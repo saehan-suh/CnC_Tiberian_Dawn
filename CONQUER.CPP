@@ -72,7 +72,9 @@
 #include	<dos.h>
 #include	<share.h>
 #include <malloc.h>
-#include  "ccdde.h"
+
+//Commented out; defunct
+//#include "ccdde.h"
 
 #define SHAPE_TRANS		0x40
 

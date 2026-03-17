@@ -35,8 +35,7 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef EVENT_H
-#define EVENT_H
+#pragma once
 
 /*
 **	This event class is used to contain all external game events (things that the player can
@@ -223,4 +222,3 @@ class EventClass
 		static char * EventNames[LAST_EVENT];
 };
 
-#endif

@@ -51,9 +51,9 @@
 
 #include "function.h"
 #include "tcpip.h"
-#include "ccdde.h"
 
-
+//Commented out; defunct
+//#include "ccdde.h"
 
 /***************************************************************************
 ** Internet specific globals
