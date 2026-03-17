@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C&C Tiberian Dawn — Header Dependency Map</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13161e;
+    --bg3: #1a1e28;
+    --border: rgba(255,255,255,0.08);
+    --text: #e2e4ec;
+    --muted: #6b7280;
+    --tier1: #e85d30;
+    --tier1-dim: rgba(232,93,48,0.15);
+    --tier2: #4a90d9;
+    --tier2-dim: rgba(74,144,217,0.15);
+    --tier3: #2ab07a;
+    --tier3-dim: rgba(42,176,122,0.15);
+    --tier4: #9b6dff;
+    --tier4-dim: rgba(155,109,255,0.15);
+    --tier5: #f0a500;
+    --tier5-dim: rgba(240,165,0,0.15);
+    --tier6: #e84040;
+    --tier6-dim: rgba(232,64,64,0.18);
+    --fix: #e84040;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    padding: 40px 24px 80px;
+  }
+
+  header {
+    max-width: 960px;
+    margin: 0 auto 48px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    letter-spacing: -0.5px;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  header p {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .map {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .tier {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  .tier-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 20px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .tier-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .tier-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .node {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    min-width: 130px;
+    flex: 1;
+  }
+
+  .node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  .node-name {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+
+  .node-desc {
+    font-size: 10px;
+    opacity: 0.7;
+    line-height: 1.4;
+  }
+
+  .t1 { background: var(--tier1-dim); border-color: rgba(232,93,48,0.4); }
+  .t1 .node-name { color: var(--tier1); }
+  .t2 { background: var(--tier2-dim); border-color: rgba(74,144,217,0.4); }
+  .t2 .node-name { color: var(--tier2); }
+  .t3 { background: var(--tier3-dim); border-color: rgba(42,176,122,0.4); }
+  .t3 .node-name { color: var(--tier3); }
+  .t4 { background: var(--tier4-dim); border-color: rgba(155,109,255,0.4); }
+  .t4 .node-name { color: var(--tier4); }
+  .t5 { background: var(--tier5-dim); border-color: rgba(240,165,0,0.4); }
+  .t5 .node-name { color: var(--tier5); }
+  .t6 { background: var(--tier6-dim); border-color: rgba(232,64,64,0.5); }
+  .t6 .node-name { color: var(--tier6); }
+
+  .connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 0;
+    color: var(--muted);
+    font-size: 16px;
+    letter-spacing: 4px;
+  }
+
+  .alert {
+    margin-top: 32px;
+    border: 1px solid rgba(232,64,64,0.4);
+    background: rgba(232,64,64,0.08);
+    border-radius: 8px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .alert-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .alert-content h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--tier6);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .alert-content p {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .alert-content code {
+    background: rgba(255,255,255,0.08);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--tier1);
+    font-size: 11px;
+  }
+
+  .legend {
+    max-width: 960px;
+    margin: 48px auto 0;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .tooltip {
+    position: fixed;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 11px;
+    color: var(--text);
+    max-width: 300px;
+    line-height: 1.7;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 100;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+  }
+
+  .tooltip.visible { opacity: 1; }
+  .tooltip strong { color: #fff; display: block; margin-bottom: 4px; font-size: 12px; }
+  .tooltip .deps { color: var(--muted); margin-top: 6px; font-size: 10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>C&amp;C Tiberian Dawn — Header Dependency Map</h1>
+  <p>MODERNIZATION PROJECT &nbsp;/&nbsp; PHASE 1 &nbsp;/&nbsp; HOVER NODES FOR DETAIL</p>
+</header>
+
+<div class="map">
+
+  <div class="tier">
+    <div class="tier-label">Tier 1 — foundation (everything depends on these)</div>
+    <div class="tier-row">
+      <div class="node t1"
+        data-name="DEFINES.H"
+        data-desc="Central type definitions for the entire game. DirType, enums, constants. Line 2037 defines DirType which FACING.H implicitly depends on."
+        data-deps="None — pure definitions">
+        <span class="node-name">DEFINES.H</span>
+        <span class="node-desc">DirType, all enums, constants</span>
+      </div>
+      <div class="node t1"
+        data-name="ABSTRACT.H"
+        data-desc="Declares AbstractClass — the root of the entire game object hierarchy. Everything ultimately inherits from this."
+        data-deps="None">
+        <span class="node-name">ABSTRACT.H</span>
+        <span class="node-desc">AbstractClass root</span>
+      </div>
+      <div class="node t1"
+        data-name="VECTOR.H"
+        data-desc="Declares VectorClass — the game's own dynamic array implementation, predating std::vector."
+        data-deps="None">
+        <span class="node-name">VECTOR.H</span>
+        <span class="node-desc">VectorClass, dynamic arrays</span>
+      </div>
+      <div class="node t1"
+        data-name="COMPAT.H"
+        data-desc="Watcom compatibility shims. Contains the dead #include of i86.h (Watcom x86 intrinsics). FIXED: i86.h include removed."
+        data-deps="i86.h — REMOVED (Watcom-only)">
+        <span class="node-name">COMPAT.H</span>
+        <span class="node-desc">Watcom shims — i86.h removed ✓</span>
+      </div>
+      <div class="node t1"
+        data-name="RAWFILE.H"
+        data-desc="Base class for file I/O. RAWFILE → CDFILE → MIXFILE → CCFILE forms the full file system hierarchy."
+        data-deps="None">
+        <span class="node-name">RAWFILE.H</span>
+        <span class="node-desc">File I/O base class</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">↓ ↓ ↓</div>
+
+  <div class="tier">
+    <div class="tier-label">Tier 2 — core types (depend only on tier 1)</div>
+    <div class="tier-row">
+      <div class="node t2"
+        data-name="FACING.H"
+        data-desc="FacingClass — tracks current and desired facing direction for units. Uses DirType extensively. BUG: does not include DEFINES.H directly — implicit dependency via include order."
+        data-deps="MISSING: DEFINES.H — fix by adding #include &quot;DEFINES.H&quot; at top of FACING.H">
+        <span class="node-name">FACING.H ⚠</span>
+        <span class="node-desc">FacingClass — missing DEFINES.H</span>
+      </div>
+      <div class="node t2"
+        data-name="MISSION.H"
+        data-desc="Mission state machine for AI-controlled units. Declares MissionClass."
+        data-deps="OBJECT.H, MONOC.H">
+        <span class="node-name">MISSION.H</span>
+        <span class="node-desc">AI mission state machine</span>
+      </div>
+      <div class="node t2"
+        data-name="TARGET.H"
+        data-desc="Target resolution — encodes references to game objects as packed integers for the targeting system."
+        data-deps="None (likely)">
+        <span class="node-name">TARGET.H</span>
+        <span class="node-desc">Targeting type encoding</span>
+      </div>
+      <div class="node t2"
+        data-name="FTIMER.H"
+        data-desc="Frame-based timer class. Used widely for countdowns, cooldowns, and timed state changes."
+        data-deps="None">
+        <span class="node-name">FTIMER.H</span>
+        <span class="node-desc">Frame timer</span>
+      </div>
+      <div class="node t2"
+        data-name="CDFILE / CCFILE"
+        data-desc="File system hierarchy: RAWFILE → CDFILE → MIXFILE → CCFILE. CCFILE reads from .MIX archives (the game's asset format)."
+        data-deps="RAWFILE.H → CDFILE.H → MIXFILE.H → CCFILE.H">
+        <span class="node-name">CDFILE / CCFILE</span>
+        <span class="node-desc">.MIX archive file hierarchy</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">↓ ↓ ↓</div>
+
+  <div class="tier">
+    <div class="tier-label">Tier 3 — game object base classes</div>
+    <div class="tier-row">
+      <div class="node t3"
+        data-name="OBJECT.H"
+        data-desc="ObjectClass — concrete base for all placeable game objects. Inherits AbstractClass. Position, health, owner."
+        data-deps="ABSTRACT.H">
+        <span class="node-name">OBJECT.H</span>
+        <span class="node-desc">→ abstract.h</span>
+      </div>
+      <div class="node t3"
+        data-name="TECHNO.H"
+        data-desc="TechnoClass — base for all ownable, targetable, weaponized objects. Inherits from RadioClass, StageClass, CargoClass, FlasherClass, HouseClass."
+        data-deps="RADIO.H, STAGE.H, CARGO.H, FLASHER.H, HOUSE.H, TARGET.H, BULLET.H, DOOR.H, CREW.H">
+        <span class="node-name">TECHNO.H</span>
+        <span class="node-desc">radio, cargo, flasher, house…</span>
+      </div>
+      <div class="node t3"
+        data-name="FOOT.H"
+        data-desc="FootClass — base for all ground-mobile units. Adds pathfinding and locomotion to TechnoClass."
+        data-deps="TARGET.H, TYPE.H, TECHNO.H, FTIMER.H">
+        <span class="node-name">FOOT.H</span>
+        <span class="node-desc">→ techno + locomotion</span>
+      </div>
+      <div class="node t3"
+        data-name="TYPE.H"
+        data-desc="TypeClass hierarchy — the static data / blueprint classes for each game entity type (UnitType, BuildingType etc)."
+        data-deps="MISSION.H, TARGET.H">
+        <span class="node-name">TYPE.H</span>
+        <span class="node-desc">Static type blueprints</span>
+      </div>
+      <div class="node t3"
+        data-name="HEAP.H"
+        data-desc="HeapClass — fixed-size memory pool allocator for game objects. Used instead of new/delete for performance."
+        data-deps="VECTOR.H">
+        <span class="node-name">HEAP.H</span>
+        <span class="node-desc">Pool allocator → vector.h</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">↓ ↓ ↓</div>
+
+  <div class="tier">
+    <div class="tier-label">Tier 4 — concrete game entities</div>
+    <div class="tier-row">
+      <div class="node t4"
+        data-name="BUILDING.H"
+        data-desc="BuildingClass — structures. Inherits TarComClass, RadioClass, CargoClass, MissionClass."
+        data-deps="TARCOM.H, RADIO.H, CARGO.H, MISSION.H, BULLET.H, TARGET.H, FACTORY.H">
+        <span class="node-name">BUILDING.H</span>
+        <span class="node-desc">tarcom, radio, cargo, factory</span>
+      </div>
+      <div class="node t4"
+        data-name="UNIT.H"
+        data-desc="UnitClass — ground vehicles. Similar inheritance chain to BUILDING.H."
+        data-deps="TARCOM.H, RADIO.H, CARGO.H, MISSION.H, TARGET.H">
+        <span class="node-name">UNIT.H</span>
+        <span class="node-desc">tarcom, radio, cargo, mission</span>
+      </div>
+      <div class="node t4"
+        data-name="AIRCRAFT.H"
+        data-desc="AircraftClass — air units. Adds FlyClass for altitude/flight state."
+        data-deps="RADIO.H, FLY.H, TARGET.H">
+        <span class="node-name">AIRCRAFT.H</span>
+        <span class="node-desc">radio, fly, target</span>
+      </div>
+      <div class="node t4"
+        data-name="BULLET.H"
+        data-desc="BulletClass — projectiles in flight. FlyClass for trajectory, FuseClass for detonation."
+        data-deps="OBJECT.H, FLY.H, FUSE.H">
+        <span class="node-name">BULLET.H</span>
+        <span class="node-desc">object, fly, fuse</span>
+      </div>
+      <div class="node t4"
+        data-name="ANIM.H"
+        data-desc="AnimClass — sprite animations (explosions, effects). Lightweight, depends only on TYPE.H."
+        data-deps="TYPE.H">
+        <span class="node-name">ANIM.H</span>
+        <span class="node-desc">→ type.h only</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">↓ ↓ ↓</div>
+
+  <div class="tier">
+    <div class="tier-label">Tier 5 — map / display / UI</div>
+    <div class="tier-row">
+      <div class="node t5"
+        data-name="CELL.H"
+        data-desc="CellClass — one map cell. Holds references to building, unit, template objects occupying it. High in chain because it depends on the concrete entity headers."
+        data-deps="BUILDING.H, UNIT.H, TEMPLATE.H">
+        <span class="node-name">CELL.H</span>
+        <span class="node-desc">building, unit, template</span>
+      </div>
+      <div class="node t5"
+        data-name="DISPLAY.H"
+        data-desc="DisplayClass — the tactical map viewport. Manages scrolling, cell rendering, selection rectangles."
+        data-deps="MAP.H, LAYER.H">
+        <span class="node-name">DISPLAY.H</span>
+        <span class="node-desc">map, layer</span>
+      </div>
+      <div class="node t5"
+        data-name="MAP.H"
+        data-desc="MapClass — the logical map data model. GSCREEN → MAP → DISPLAY is the render class chain."
+        data-deps="GSCREEN.H">
+        <span class="node-name">MAP.H</span>
+        <span class="node-desc">→ gscreen.h</span>
+      </div>
+      <div class="node t5"
+        data-name="SIDEBAR.H"
+        data-desc="The construction sidebar UI. Depends on FUNCTION.H making it very heavy."
+        data-deps="FUNCTION.H, POWER.H, FACTORY.H">
+        <span class="node-name">SIDEBAR.H</span>
+        <span class="node-desc">function, power, factory</span>
+      </div>
+      <div class="node t5"
+        data-name="UI Gadgets"
+        data-desc="Complete UI widget hierarchy: GADGET → CONTROL → TOGGLE → CHECKBOX/BUTTON. Also: SLIDER → GAUGE, LIST → CHEKLIST/COLRLIST."
+        data-deps="GADGET.H → CONTROL.H → TOGGLE.H → CHECKBOX.H / SHAPEBTN.H / TEXTBTN.H">
+        <span class="node-name">UI Gadgets</span>
+        <span class="node-desc">gadget → control → toggle…</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">↓ ↓ ↓</div>
+
+  <div class="tier">
+    <div class="tier-label">Tier 6 — god headers ⚠ danger zone</div>
+    <div class="tier-row">
+      <div class="node t6"
+        data-name="FUNCTION.H"
+        data-desc="Includes ~30 headers including the dead wwlib32.h (Westwood proprietary library). Almost every .CPP includes this, making it a compilation blocker. Strategy: comment out wwlib32.h and stub missing symbols as they surface."
+        data-deps="watcom.h, compat.h, jshell.h, vector.h, heap.h, ccfile.h, monoc.h, conquer.h, debug.h, special.h, defines.h, utracker.h, facing.h, ftimer.h, theme.h, link.h, gadget.h, control.h, toggle.h, checkbox.h, shapebtn.h, textbtn.h, slider.h, list.h, cheklist.h, colrlist.h, edit.h, gauge.h… + wwlib32.h (DEAD)">
+        <span class="node-name">FUNCTION.H ⚠</span>
+        <span class="node-desc">~30 includes — wwlib32.h dead</span>
+      </div>
+      <div class="node t6"
+        data-name="EXTERNS.H"
+        data-desc="Declares every global variable in the game as extern. The single largest obstacle to testability — any file including this drags in the entire game state. Strategy: wrap in a GameState struct in Phase 3, do not touch in Phase 1."
+        data-deps="CELL.H, MAPEDIT.H, TECHNO.H, TYPE.H, BUILDING.H, UNIT.H, CREDITS.H, GOPTIONS.H, OPTIONS.H, INFANTRY.H">
+        <span class="node-name">EXTERNS.H ⚠</span>
+        <span class="node-desc">all globals — testability blocker</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert">
+    <div class="alert-icon">⚠</div>
+    <div class="alert-content">
+      <h3>Immediate fix required — FACING.H implicit dependency</h3>
+      <p>
+        <code>FACING.H</code> uses <code>DirType</code> (defined at line 2037 of <code>DEFINES.H</code>) but does not include it directly.
+        It compiled under Watcom because every translation unit included <code>CONQUER.H</code> → <code>DEFINES.H</code> first.
+        The GTest harness includes <code>FACING.H</code> in isolation — breaking that assumption.
+        <br><br>
+        Fix: add <code>#include "DEFINES.H"</code> at the top of <code>FACING.H</code>, below the include guard.
+        This makes the header self-contained — a C++20 best practice.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tier1)"></div>Tier 1 — Foundation</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tier2)"></div>Tier 2 — Core types</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tier3)"></div>Tier 3 — Base classes</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tier4)"></div>Tier 4 — Entities</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tier5)"></div>Tier 5 — Map / UI</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tier6)"></div>Tier 6 — God headers</div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+  const tooltip = document.getElementById('tooltip');
+  let hideTimer;
+
+  document.querySelectorAll('.node').forEach(node => {
+    node.addEventListener('mouseenter', e => {
+      clearTimeout(hideTimer);
+      const name = node.dataset.name;
+      const desc = node.dataset.desc;
+      const deps = node.dataset.deps;
+      tooltip.innerHTML = `<strong>${name}</strong>${desc}<div class="deps">Dependencies: ${deps}</div>`;
+      tooltip.classList.add('visible');
+      positionTooltip(e);
+    });
+
+    node.addEventListener('mousemove', e => positionTooltip(e));
+
+    node.addEventListener('mouseleave', () => {
+      hideTimer = setTimeout(() => tooltip.classList.remove('visible'), 200);
+    });
+  });
+
+  function positionTooltip(e) {
+    const tw = 300, th = 150;
+    let x = e.clientX + 16;
+    let y = e.clientY + 16;
+    if (x + tw > window.innerWidth) x = e.clientX - tw - 8;
+    if (y + th > window.innerHeight) y = e.clientY - th - 8;
+    tooltip.style.left = x + 'px';
+    tooltip.style.top = y + 'px';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+
+File       Includes
+----       --------
+AIRCRAFT.H radio.h, fly.h, target.h
+ANIM.H     type.h
+AUDIO.H    memory.h
+BUILDING.H tarcom.h, radio.h, cargo.h, mission.h, bullet.h, target.h, factory.h
+BULLET.H   object.h, fly.h, fuse.h
+CCDDE.H    dde.h
+CCFILE.H   mixfile.h, cdfile.h
+CDFILE.H   rawfile.h
+CELL.H     building.h, unit.h, template.h
+CHECKBOX.H toggle.h
+CHEKLIST.H list.h
+COLRLIST.H list.h
+CONFDLG.H  gadget.h
+CONTROL.H  gadget.h
+DESCDLG.H  gadget.h
+DISPLAY.H  map.h, layer.h
+DRIVE.H    foot.h
+EXTERNS.H  cell.h, mapedit.h, techno.h, type.h, building.h, unit.h, credits.h, goptions.h, options.h, infantry.H
+FACTORY.H  stage.h
+FOOT.H     target.h, type.h, techno.h, ftimer.h
+FUNCTION.H watcom.h, compat.h, jshell.h, vector.h, heap.h, ccfile.h, monoc.h, conquer.h, debug.h, special.h, defines.h, utracker.h, facing.h, ftimer.h, theme.h, link.h, gadget.h, control.h, toggle.h, checkbox.h, shapebtn.h, textbtn.h, slider.h, list.h, cheklist.h, colrlist.h, edit.h, gauge.h…
+GADGET.H   link.h
+GAMEDLG.H  gadget.h
+GOPTIONS.H options.h, gadget.h
+GSCREEN.H  function.h, cell.h
+HEAP.H     vector.h
+HELP.H     tab.h
+HOUSE.H    type.h, region.h, vector.h
+IPXADDR.H  ipx.h
+IPXCONN.H  seqconn.h, noseqcon.h, ipxaddr.h
+IPXGCONN.H ipxconn.h
+IPXMGR.H   ipxconn.h, ipxgconn.h, ipxaddr.h, connmgr.h
+LAYER.H    vector.h
+LIST.H     control.h, shapebtn.h, slider.h
+LOGIC.H    layer.h
+MAP.H      gscreen.h
+MAPEDIT.H  function.h
+MISSION.H  object.h, monoc.h
+MIXFILE.H  link.h
+MONOC.H    dpmi.h, function.h
+MOUSE.H    stage.h, scroll.h
+MSGBOX.H   jshell.h
+NOSEQCON.H connect.h, combuf.h
+NULLCONN.H noseqcon.h, commlib.h
+NULLMGR.H  nullconn.h, connmgr.h, commlib.h
+OBJECT.H   abstract.h
+OVERLAY.H  object.h, type.h
+PACKET.H   field.h
+POWER.H    radar.h
+QUEUE.H    mission.h, target.h, defines.h
+RADAR.H    display.h
+RADIO.H    object.h, mission.h, flasher.h
+REAL.H     watcom.h, compat.h, jshell.h, vector.h, heap.h, ccfile.h, monoc.h, conquer.h, debug.h, special.h, defines.h, facing.h, ftimer.h, theme.h, link.h, gadget.h, control.h, toggle.h, checkbox.h, shapebtn.h, textbtn.h, slider.h, list.h, cheklist.h, colrlist.h, edit.h, gauge.h, msgbox.h, …
+SAVEDLG.H  gadget.h
+SCORE.H    unit.h, building.h
+SCROLL.H   help.h
+SEQCONN.H  connect.h, comqueue.h
+SESSION.H  ipxaddr.h, msglist.h, connect.h
+SHAPEBTN.H toggle.h
+SIDEBAR.H  function.h, power.h, factory.h
+SLIDER.H   gauge.h, shapebtn.h
+SMUDGE.H   object.h, type.h
+SOUNDDLG.H gadget.h
+SUPER.H    ftimer.h
+TAB.H      sidebar.h, credits.h
+TARCOM.H   turret.h, bullet.h
+TEAM.H     teamtype.h, abstract.h
+TECHNO.H   radio.h, stage.h, cargo.h, flasher.h, house.h, target.h, bullet.h, door.h, crew.h
+TEMPLATE.H object.h, type.h
+TERRAIN.H  object.h, type.h
+TEXTBTN.H  toggle.h
+TOGGLE.H   control.h
+TURRET.H   drive.h
+TYPE.H     mission.h, target.h
+UNIT.H     tarcom.h, radio.h, cargo.h, mission.h, target.h
+VISUDLG.H  gadget.h
+
