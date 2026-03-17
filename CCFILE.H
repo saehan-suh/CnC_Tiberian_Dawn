@@ -35,10 +35,10 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef CCFILE_H
-#define CCFILE_H
+#pragma once
 
-#include	<wwlib32.h>
+//#include	<wwlib32.h>
+#include    "wwlib32_stub.hpp"
 #include	<limits.h>
 #include	"mixfile.h"
 #include	"cdfile.h"
@@ -110,5 +110,3 @@ class CCFileClass : public CDFileClass
 		CCFileClass const operator = (CCFileClass const & c);
 		CCFileClass (CCFileClass const & ) {};
 };
-
-#endif

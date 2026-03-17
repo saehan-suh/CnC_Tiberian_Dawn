@@ -38,10 +38,10 @@
  *   RawFileClass::Is_Open -- Checks to see if the file is open or not.                        *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef RAWFILE_H
-#define RAWFILE_H
+#pragma once
 
-#include	<wwlib32.h>
+//#include	<wwlib32.h>
+#include    "wwlib32_stub.hpp"
 #include	<limits.h>
 #include	<errno.h>
 #include	<wwfile.h>
@@ -239,5 +239,3 @@ inline int RawFileClass::Is_Open(void) const
 {
 	return (Handle >= 0);
 }
-
-#endif

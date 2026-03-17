@@ -35,10 +35,10 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef MIXFILE_H
-#define MIXFILE_H
+#pragma once
 
-#include	<wwlib32.h>
+//#include	<wwlib32.h>
+#include    "wwlib32_stub.hpp"
 #include	"link.h"
 
 class MixFileClass : public LinkClass 
@@ -83,5 +83,3 @@ class MixFileClass : public LinkClass
 
 		static MixFileClass * First;
 };
-
-#endif

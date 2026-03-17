@@ -35,8 +35,7 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef COMPAT_H
-#define COMPAT_H
+#pragma once
 
 #define  KeyNumType	int
 #define  KeyASCIIType	int
@@ -161,5 +160,3 @@ extern "C"{
 extern int MouseQX;
 extern int MouseQY;
 }
-
-#endif

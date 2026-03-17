@@ -34,9 +34,13 @@
  *---------------------------------------------------------------------------------------------*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef DEFINES_H
-#define DEFINES_H
+#pragma once
 
+// SpecialClass (Used at lines 2582, 2650)
+#include "SPECIAL.H"
+
+// wwlib32_stub header
+#include "wwlib32_stub.hpp"
 
 /**********************************************************************
 **	If defined, then the advanced balancing features will be enabled
@@ -2719,7 +2723,7 @@ typedef enum {
 	CC_BLUE_GREEN		= CYAN,
 	CC_BLUE_GREY		= LTBLUE,
 	CC_ORANGE			= PURPLE,
-	CC_GREEN				= GREEN,
+	CC_GREEN			= GREEN,
 	CC_TAN				= BROWN,
 
 	CC_GREEN_SHADOW	= 140,
@@ -2766,6 +2770,3 @@ typedef enum OptionControlType {
 #define TOTAL_CRATE_TYPES 15
 
 #define size_of(typ,id) sizeof(((typ*)0)->id)
-
-
-#endif

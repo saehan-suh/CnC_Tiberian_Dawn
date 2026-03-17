@@ -35,8 +35,10 @@
  * Functions:                                                                                  * 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef FACING_H
-#define FACING_H
+#pragma once
+
+// DirType; C-style enum class defined in Defines.h, line 2037
+#include "DEFINES.H"
 
 /*
 **	This is a general facing handler class. It is used in those cases where facing needs to be
@@ -74,6 +76,3 @@ class FacingClass
 		DirType CurrentFacing;
 		DirType DesiredFacing;
 };
-
-
-#endif
