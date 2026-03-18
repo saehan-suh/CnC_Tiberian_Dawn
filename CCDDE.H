@@ -41,7 +41,8 @@
 
 #ifdef WIN32
 
-#include "dde.h"
+//Commented out; defunct
+//#include "dde.h"
 
 class DDEServerClass {
 

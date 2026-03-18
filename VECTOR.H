@@ -50,21 +50,28 @@
  *   DynamicVectorClass<T>::ID -- Find matching value in the dynamic vector.                   * 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef VECTOR_H
-#define VECTOR_H
+#pragma once
 
+/* Commented out - No longer needed
 #ifndef false
 #define false 0
 #endif
 #ifndef true
 #define true 1
 #endif
+*/
 
 #include	<stdlib.h>
 #include	<stddef.h>
+#include	"JSHELL.H"	// Bitwise operators are included in this header
+#include	<new>
 
+/*  Commented out - No longer needed
+    With the inclusion of `new` header, these new operators will be obsolete
 inline void * operator new(size_t , void * pointer) {return(pointer);}
 inline void * operator new[](size_t , void * pointer) {return(pointer);}
+*/
+
 
 
 /**************************************************************************
@@ -291,6 +298,3 @@ class BooleanVectorClass
 		*/
 		VectorClass<unsigned char> BitArray;
 };
-
-
-#endif

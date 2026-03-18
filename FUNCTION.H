@@ -119,7 +119,8 @@ UnitTypeClass      �   BuildingTypeClass      �
 */
 
 /*
-    This macro is to be removed
+    This macro is to be removed, since this is pretty old-relic
+	and conflicts with the modern compilers
 */
 // #ifndef TRUE_FALSE_DEFINED
 // enum {false=0,true=1};
@@ -128,13 +129,22 @@ UnitTypeClass      �   BuildingTypeClass      �
 // #endif	//TRUE_FALSE_DEFINED
 
 
-#ifndef _WIN32
-#define _WIN32
-#endif
+/*
+    These macros are redundant. Commented out.
+*/
+// #ifndef _WIN32
+// #define _WIN32
+// #endif
 
-#ifndef WIN32
-#define WIN32 1	//_LEAN_AND_MEAN
-#endif
+// #ifndef WIN32
+// #define WIN32 1	//_LEAN_AND_MEAN
+// #endif
+
+// Exclude unused Windows subsystems for faster compilation.
+#define NODDE        // DDE is stubbed — Westwood Chat is defunct
+#define NOCOMM       // Serial comms — GCL handles this, also stubbed
+#define NOMINMAX     // Prevent Windows min/max macros conflicting with std
+#define WIN32_LEAN_AND_MEAN  // Exclude rarely used Windows headers
 #include <windows.h>
 
 
@@ -163,7 +173,8 @@ typedef struct {
 
 
 // Don't complain if these headers aren't referenced.
-// TODO: These headers are not C++-idiomatic. Consider changing them
+// TODO: Phase 1 - These headers are not C++-idiomatic.
+//     Consider changing them
 #include	<string.h>
 #include	<stdlib.h>
 #include	<stdio.h>

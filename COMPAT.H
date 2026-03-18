@@ -94,14 +94,17 @@ typedef enum MenuIndexType {
 	MENUPADDING=0x1000
 } MenuIndexType;
 
-
+// TODO: Replace some of the manually-crafted limits,
+//   if not all, with std::numeric_limits.
 #define BITSPERBYTE 8
 #define MAXSHORT    0x7fff
 #define HIBITS      0x8000
 //#define MAXLONG     0x7fffffffL
 #define HIBITL      0x80000000
 
+#ifndef MAXINT
 #define MAXINT      MAXLONG
+#endif
 #define HIBITI      HIBITL
 
 #define DMAXEXP     308
