@@ -35,24 +35,108 @@ binaries run fine on Windows 11 — this project targets the source.
 - `CWSTUB.C` — Watcom C stub. No equivalent needed under MSVC.
 
 ### Added
-- `wwlib32_stub.hpp` — replacement stubs for constants and types originally
-  defined in the proprietary Westwood wwlib32 library. Player color palette
-  indices: YELLOW, RED, CYAN, LTBLUE, PURPLE, GREEN, BROWN.
+- `wwlib32_stub.hpp`
+  - replacement stubs for constants and types originally
+    defined in the proprietary Westwood wwlib32 library. Player color palette
+    indices: YELLOW, RED, CYAN, LTBLUE, PURPLE, GREEN, BROWN.
 
 ---
 
-## [03/17/2026] — Phase 1 (Ongoing): C++20 Language Modernization
+## [03/17/2026] - Phase 1.1: Compilation Unblocking with Partial modernization (Ongoing)
+
+### Goal
+
+- Zero errors under MSVC/Ninja. No major functional rewrites - stubs, guards and partial rewrites only.
+  - In this phase, rewrite MUST NEVER change:
+    - Function signature(s)
+    - Function input parameter(s)
+      (Renaming variables would be okay, provided that it gives clarity to the codebase)
+    - Function output
 
 ### Fixed
-- `COMPAT.H` — Removed `#include <i86.h>` (Watcom x86 port I/O intrinsics,
-  no MSVC equivalent). Hardware access will route through Win32 API.
-- `FUNCTION.H` — Commented out `#include "wwlib32.h"` (likely proprietary
-  Westwood Studios engine library, not open-sourced). Missing symbols will be
-  stubbed incrementally as they surface.
-- `FACING.H` — Added `#include "DEFINES.H"` to make header self-contained.
-  Previously relied on implicit include ordering via `CONQUER.H` — broken when
-  included in isolation by the GTest harness. `DirType` is defined at line 2037
-  of `DEFINES.H`.
+- `CCFILE.H`
+  - Commented out `#include <wwlib32.h>`; replaced with `wwlib32_stub.hpp`
+  - Replaced the include guard with `#pragma once` for correctness and code hygiene
+    Although `#pragma once` is technically non-standard as of the moment (March, 2026)
+    the ISO C++ committee is considering to add this in the next C++ improvement
+    FYI, MSVC, GCC and Clang support it.
+- `COMPAT.H`
+  - Removed `#include <i86.h>` (Watcom x86 port I/O intrinsics,
+    no MSVC equivalent). Hardware access will route through Win32 API.
+  - Replaced the include guard with `#pragma once` for correctness and code hygiene
+- `DDE.H` / `CCDDE.H`
+  - Stubbed entirely — Westwood Chat lobby service is defunct.
+    Modern session coordination is out of scope (Discord etc.).
+  - `#include "ccdde.h"` commented out at all call sites:
+    `CONQUER.CPP`, `EVENT.CPP`, `INIT.CPP`, `INTERNET.CPP`,
+    `MENUS.CPP`, `NETDLG.CPP`, `STARTUP.CPP`, `STATS.CPP`
+  - `DDE_STUBBED` marker defined in `network_stub.hpp`
+- `DEFINES.H`
+  - Replaced the include guard with `#pragma once` for correctness and code hygiene
+- `EVENT.H`
+  - Replaced the include guard with `#pragma once` for correctness and code hygiene
+- `FACING.H`
+  - Added `#include "DEFINES.H"` to make header self-contained.
+    Previously relied on implicit include ordering via `CONQUER.H`
+  - broken when included in isolation by the GTest harness. `DirType` is defined
+    at line 2037 of `DEFINES.H`.
+  - Replaced the include guard with `#pragma once` for correctness and code hygiene
+- `FUNCTION.H`
+  - Commented out `#include "wwlib32.h"` (likely proprietary
+    Westwood Studios engine library, not open-sourced).
+    Missing symbols will be stubbed incrementally as they surface.
+  - Commented out
+    - `#include <vqa32\vqafile.h>`
+    - `#include <vqa32\vqaplay.h>`
+    - `#include <dos.h>`
+    - `#include <fast.h>`
+    - `#include "memcheck.h"`
+    - `#include <modem.h>`
+    - `#include <new.h>`
+  - Commented out Watcom `bool` compatibility shim since boolean becomes now a native keyword
+  - Introduced the `#ifndef` guard for `WIN32` and `_WIN32`
+  - Removed manual `WIN32` / `_WIN32` defines; redundant with
+    CMake command-line `/DWIN32` and `<windows.h>` internal definitions.
+    Previously caused C4005 redefinition warnings.
+  - Replaced the include guard with `#pragma once` for correctness and code hygiene
+- `JSHELL.H`
+  - Replaced the include guard with `#pragma once` for correctness and code hygiene
+  - Added forward declaration of 'ShapeFlages_Type' to resolve operator instantiation error
+    - [] TODO: Phase 1.1 - Convert to proper scoped enum class.
+    - [] TODO: Phase 1.1 - Above these lines, constrain template bitwise operators with require, etc.
+  - Replaced all `#pragma aux` assembly
+        implementations with C++20 equivalents. Function signatures unchanged.
+    - `First_True_Bit` → `std::countr_zero` (`<bit>`)
+    - `First_False_Bit` → `std::countr_one` (`<bit>`)
+    - `Bound` → `std::clamp` (`<algorithm>`)
+    - `Fixed_To_Cardinal` / `Cardinal_To_Fixed` → explicit 64-bit arithmetic
+    - `Set_Bit` / `Get_Bit` → idiomatic C++ bit mask operations
+    - [] TODO: Phase 1.1 - Verify 1:1 correspondance between the modern functions and ASM blocks
+        above; if all checks out, delete the commented-out ASM blocks.
+  - Replaced the Keyboard class definitions to suprress the errors for the Phase 1.1
+    - [] TODO: Phase 1.2 - replace with Win32 GetAsyncKeyState, etc.
+- `MIXFILE.H`
+  - Commented out `#include <wwlib32.h>`; replaced with `wwlib32_stub.hpp`
+  - Replaced the include guard with `#pragma once` for correctness and code hygiene
+- `RAWFILE.H`
+  - Commented out `#include <wwlib32.h>`; replaced with `wwlib32_stub.hpp`
+  - Replaced the include guard with `#pragma once` for correctness and code hygiene
+- `NULLCONN.H` / `NULLMGR.H`
+  - Commented out `#include <commlib.h>`; replaced with `network_stub.hpp`
+    Greenleaf Communications Library (GCL), proprietary, not open-sourced.
+    - Dial-up/serial multiplayer subsystem excluded from modernization scope.
+      LAN multiplayer (IPX stack) is the target instead.
+  - Replaced the include guard with `#pragma once` for correctness and code hygiene
+
+### Added
+- Added `network_stub.hpp` — Placeholder for any GCL, Westwood Chat-related
+  type references that surface in non-networking code.
+
+## [TBA] — Phase 1.2: C++20 Language Modernization
+
+### Fixed
+
+### Added
 
 ---
 
@@ -77,7 +161,7 @@ systems. The three immediate blockers for any Windows 11 build are:
 
 - C++20 throughout. No C-style casts, raw owning pointers, or `#define` constants.
 - Self-documenting names. Rename only where the original name is opaque or
-  misleading — preserve names that are already clear.
+  misleading — preserve names that are already clear. (CODE SHOULD BE READ LIKE A BOOK)
 - Headers must be self-contained. Every `.hpp` must compile cleanly in isolation.
 - GTest coverage before refactoring. Tests are written before a module is
   modernized, not after.
