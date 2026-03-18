@@ -35,14 +35,33 @@
  * Functions:                                                                                  * 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef JSHELL_H
-#define JSHELL_H
+#pragma once
+
+#include <bit>
+#include <algorithm>
 
 /*
 **	Interface class to the keyboard. This insulates the game from library vagaries. Most
 **	notable being the return values are declared as "int" in the library whereas C&C
 **	expects it to be of KeyNumType.
 */
+
+// Input functions — originally from wwlib32.
+// TODO: Phase 2 — replace with Win32 GetAsyncKeyState / GetCursorPos.
+class Keyboard 
+{
+	public:
+		inline int Get_Key_Num(void) { return 0; };
+		inline int Check_Key_Num(void) { return 0; };
+		inline int To_ASCII(int _key_num) { return 0; };
+		inline void Clear(void) {};
+		inline void Stuff(int _key_num) {};
+		inline int Down(int _key_num) { return 0; };
+		inline int Mouse_X(void) { return 0; };
+		inline int Mouse_Y(void) { return 0; };
+};
+
+/*
 class Keyboard 
 {
 	public:
@@ -55,7 +74,7 @@ class Keyboard
 		static int Mouse_X(void) {return Get_Mouse_X();};
 		static int Mouse_Y(void) {return Get_Mouse_Y();};
 };
-
+*/
 
 #ifdef NEVER
 inline void * operator delete(void * data) 
@@ -74,6 +93,10 @@ inline void * operator delete[] (void * data)
 **	These templates allow enumeration types to have simple bitwise
 **	arithmatic performed. The operators must be instatiated for the
 **	enumerated types desired.
+*/
+/*
+    TODO: Phase 1 - Constrain template with require, std::is_enum<T>
+        At this state, these operators are too broad.
 */
 template<class T> inline T operator ++(T & a)
 {
@@ -115,12 +138,24 @@ template<class T> inline T operator ~(T t1)
 **	The shape flags are likely to be "or"ed together and other such bitwise
 **	manipulations. These instatiated operator templates allow this.
 */
+
+/*
+    TODO: Phase 1 - Convert to proper scoped enum class
+	    In total, 308 call sites spotted during the last search.
+
+*/
+enum ShapeFlags_Type : int;
 inline ShapeFlags_Type operator |(ShapeFlags_Type, ShapeFlags_Type);
 inline ShapeFlags_Type operator &(ShapeFlags_Type, ShapeFlags_Type);
 inline ShapeFlags_Type operator ~(ShapeFlags_Type);
 
+/*
+	TODO: Phase 1 - Verify the correctness of the functions with
+	    the original ASM codes written in `pragma aux` blocks.
+		Once the verification is done, delete ASM blocks.
+*/
 
-void Set_Bit(void * array, int bit, int value);
+/*
 #pragma aux Set_Bit parm [esi] [ecx] [eax] \
 	modify [esi ebx] = 			\
 	"mov	ebx,ecx"					\
@@ -131,8 +166,16 @@ void Set_Bit(void * array, int bit, int value);
 	"jz	ok"						\
 	"bts	[esi+ebx*4],ecx"		\
 	"ok:"
+*/
+inline void Set_Bit(void* array, int bit, int value) {
+    auto* arr = static_cast<unsigned int*>(array);
+    if (value)
+        arr[bit >> 5] |=  (1u << (bit & 31));
+    else
+        arr[bit >> 5] &= ~(1u << (bit & 31));
+}
 
-int Get_Bit(void const * array, int bit);
+/*
 #pragma aux Get_Bit parm [esi] [eax] \
 	modify [esi ebx] \
 	value [eax]		= 				\
@@ -141,8 +184,13 @@ int Get_Bit(void const * array, int bit);
 	"and	eax,01Fh"				\
 	"bt	[esi+ebx*4],eax"		\
 	"setc	al"
+*/
+inline int Get_Bit(void const* array, int bit) {
+    auto const* arr = static_cast<unsigned int const*>(array);
+    return (arr[bit >> 5] >> (bit & 31)) & 1;
+}
 
-int First_True_Bit(void const * array);
+/*
 #pragma aux First_True_Bit parm [esi] \
 	modify [esi ebx] \
 	value [eax]		= 				\
@@ -154,8 +202,20 @@ int First_True_Bit(void const * array);
 	"bsf	ebx,ebx"					\
 	"jz	again"					\
 	"add	eax,ebx"
+*/
+inline int First_True_Bit(void const* array) {
+    auto const* arr = static_cast<unsigned int const*>(array);
+    int base = 0;
+    while (true) {
+        if (*arr) {
+            return base + std::countr_zero(*arr);
+        }
+        ++arr;
+        base += 32;
+    }
+}
 
-int First_False_Bit(void const * array);
+/*
 #pragma aux First_False_Bit parm [esi] \
 	modify [esi ebx] \
 	value [eax]		= 				\
@@ -168,8 +228,20 @@ int First_False_Bit(void const * array);
 	"bsf	ebx,ebx"					\
 	"jz	again"					\
 	"add	eax,ebx"
+*/
+inline int First_False_Bit(void const* array) {
+    auto const* arr = static_cast<unsigned int const*>(array);
+    int base = 0;
+    while (true) {
+        if (~(*arr)) {
+            return base + std::countr_one(*arr);
+        }
+        ++arr;
+        base += 32;
+    }
+}
 
-extern int Bound(int original, int min, int max);
+/*
 #pragma aux Bound parm [eax] [ebx] [ecx] \
 	modify [eax] \
 	value [eax]		= 				\
@@ -183,6 +255,10 @@ extern int Bound(int original, int min, int max);
 	"jl	okmax"					\
 	"mov	eax,ecx"					\
 	"okmax:"
+*/
+inline int Bound(int original, int min, int max) {
+	return std::clamp(original, min, max);
+}
 
 #ifdef NEVER
 extern unsigned Bound(unsigned original, unsigned min, unsigned max);
@@ -201,8 +277,7 @@ extern unsigned Bound(unsigned original, unsigned min, unsigned max);
 	"okmax:"
 #endif
 
-
-unsigned Fixed_To_Cardinal(unsigned base, unsigned fixed);
+/*
 #pragma aux Fixed_To_Cardinal parm [eax] [edx] \
 	modify [edx] \
 	value [eax]		= 				\
@@ -213,9 +288,15 @@ unsigned Fixed_To_Cardinal(unsigned base, unsigned fixed);
 	"mov	eax,000FFFFFFh"		\
 	"ok:"								\
 	"shr	eax,8"
+*/
+inline unsigned Fixed_To_Cardinal(unsigned base, unsigned fixed) {
+    unsigned long long result = 
+        static_cast<unsigned long long>(base) * fixed + 0x80u;
+    if (result > 0x00FFFFFFu) return 0x00FFFFFFu;
+    return static_cast<unsigned>(result >> 8);
+}
 
-
-unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);
+/*
 #pragma aux Cardinal_To_Fixed parm [ebx] [eax] \
 	modify [edx] \
 	value [eax]		= 				\
@@ -225,5 +306,10 @@ unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);
 	"xor	edx,edx"					\
 	"div	ebx"						\
 	"fini:"
-
-#endif
+*/
+inline unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal) {
+    if (!base) return 0;
+    return static_cast<unsigned>(
+        (static_cast<unsigned long long>(cardinal) << 8) / base
+    );
+}
