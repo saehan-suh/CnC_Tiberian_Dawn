@@ -72,6 +72,8 @@ binaries run fine on Windows 11 — this project targets the source.
     `MENUS.CPP`, `NETDLG.CPP`, `STARTUP.CPP`, `STATS.CPP`
   - `DDE_STUBBED` marker defined in `network_stub.hpp`
 - `DEFINES.H`
+  - Documented implicit COORDINATE packing convention at typedef (line 1597).
+    TODO: Phase 1.2 — replace with strongly typed struct.
   - Replaced the include guard with `#pragma once` for correctness and code hygiene
 - `EVENT.H`
   - Replaced the include guard with `#pragma once` for correctness and code hygiene
@@ -94,11 +96,16 @@ binaries run fine on Windows 11 — this project targets the source.
     - `#include <modem.h>`
     - `#include <new.h>`
   - Commented out Watcom `bool` compatibility shim since boolean becomes now a native keyword
+  - Commented out legacy functions `Interpolate_2X_Scale` and `ModeX_Blit`
+  - Removed the obsolete `register` keyword from the header file
   - Introduced the `#ifndef` guard for `WIN32` and `_WIN32`
   - Removed manual `WIN32` / `_WIN32` defines; redundant with
     CMake command-line `/DWIN32` and `<windows.h>` internal definitions.
     Previously caused C4005 redefinition warnings.
-  - Replaced the include guard with `#pragma once` for correctness and code hygiene
+  - `Distance_Coord` — commeneted out `#pragma aux` Watcom assembly and
+    inserted C++20 equivalent.
+    Octagonal distance approximation `max(|dx|,|dy|) + min(|dx|,|dy|)/2`
+    COORDINATE packing documented: low 16 bits = X, high 16 bits = Y.
 - `JSHELL.H`
   - Replaced the include guard with `#pragma once` for correctness and code hygiene
   - Added forward declaration of 'ShapeFlages_Type' to resolve operator instantiation error
@@ -118,15 +125,27 @@ binaries run fine on Windows 11 — this project targets the source.
 - `MIXFILE.H`
   - Commented out `#include <wwlib32.h>`; replaced with `wwlib32_stub.hpp`
   - Replaced the include guard with `#pragma once` for correctness and code hygiene
-- `RAWFILE.H`
-  - Commented out `#include <wwlib32.h>`; replaced with `wwlib32_stub.hpp`
-  - Replaced the include guard with `#pragma once` for correctness and code hygiene
 - `NULLCONN.H` / `NULLMGR.H`
   - Commented out `#include <commlib.h>`; replaced with `network_stub.hpp`
     Greenleaf Communications Library (GCL), proprietary, not open-sourced.
     - Dial-up/serial multiplayer subsystem excluded from modernization scope.
       LAN multiplayer (IPX stack) is the target instead.
   - Replaced the include guard with `#pragma once` for correctness and code hygiene
+- `RAWFILE.H`
+  - Commented out `#include <wwlib32.h>`; replaced with `wwlib32_stub.hpp`
+  - Replaced the include guard with `#pragma once` for correctness and code hygiene
+- `wwlib32_stub.hpp`
+  - Added the following functions, structs and classes placeholders
+    - `VQAHandle`
+    - `BufferClass`
+    - `GraphicViewPortClass` and its derived `GraphicBufferClass`
+    - `Desired_Facing256`
+    - `Desired_Facing8`
+    - `Extract_String`
+  - Added the work packing macros, presumably from wwlib32 library
+    - `MAKE_LONG`
+    - `LOW_WORD`
+    - `HIGH_WORD`
 
 ### Added
 - Added `network_stub.hpp` — Placeholder for any GCL, Westwood Chat-related

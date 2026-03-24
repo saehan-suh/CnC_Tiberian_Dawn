@@ -402,7 +402,8 @@ int Get_Resolution_Factor(void);
 #define SIZE_OF_PALETTE 256
 extern	"C" unsigned char *InterpolationPalette;
 extern	BOOL	InterpolationPaletteChanged;
-extern	void 	Interpolate_2X_Scale( GraphicBufferClass *source, GraphicViewPortClass *dest ,char const *palette_file_name);
+// Software 2x scaler - Dos Legacy future / Not applicable for Win32 environment
+//extern	void 	Interpolate_2X_Scale( GraphicBufferClass *source, GraphicViewPortClass *dest ,char const *palette_file_name);
 void Read_Interpolation_Palette (char const *palette_file_name);
 void Write_Interpolation_Palette (char const *palette_file_name);
 void Increase_Palette_Luminance(unsigned char *InterpolationPalette ,	int RedPercentage ,int GreenPercentage ,int BluePercentage ,int cap);
@@ -416,7 +417,7 @@ extern "C"{
 /*
 **	COORD.CPP
 */
-void  Move_Point(short &x, short &y, register DirType dir, unsigned short distance);
+void  Move_Point(short &x, short &y,  DirType dir, unsigned short distance);
 COORDINATE  Adjacent_Cell(COORDINATE coord, FacingType dir);
 COORDINATE  Coord_Move(COORDINATE start, DirType facing, unsigned short distance);
 COORDINATE  Coord_Scatter(COORDINATE coord, unsigned distance, bool lock=false);
@@ -812,7 +813,8 @@ extern bool GameInFocus;
 
 extern	int	ScreenWidth;
 extern	int	ScreenHeight;
-extern "C" void ModeX_Blit (GraphicBufferClass *source);
+// Dos Legacy Function; not applicable on Win32 environment
+//extern "C" void ModeX_Blit (GraphicBufferClass *source);
 extern	void Colour_Debug (int call_number);
 
 
@@ -849,7 +851,17 @@ extern int Load_Interpolated_Palettes(char const *filename, BOOL add=FALSE);
  * HISTORY:                                                                                    *
  *   05/27/1994 JLB : Created.                                                                 *
  *=============================================================================================*/
-int Distance_Coord(COORDINATE coord1, COORDINATE coord2);
+inline int Distance_Coord(COORDINATE coord1, COORDINATE coord2) {
+    const int dx = std::abs(Coord_X(coord1) - Coord_X(coord2));
+    const int dy = std::abs(Coord_Y(coord1) - Coord_Y(coord2));
+
+    // Octagonal distance approximation: max(dx,dy) + min(dx,dy)/2
+	// Fairly confident that this is the same as the one
+	// in Distance inline function under NEVER ifdef guard
+    return std::max(dx, dy) + std::min(dx, dy) / 2;
+}
+
+/*
 #pragma aux Distance_Coord parm [eax] [ebx] \
 	modify [edx ebx] \
 	value [eax]		= 				\
@@ -870,6 +882,7 @@ int Distance_Coord(COORDINATE coord1, COORDINATE coord2);
 	"ok:"						\
 	"shr	dx,1"				\
 	"add	ax,dx"
+*/
 
 inline int Distance(COORDINATE coord1, COORDINATE coord2)
 {

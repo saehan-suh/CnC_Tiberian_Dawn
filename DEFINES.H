@@ -1594,7 +1594,14 @@ typedef enum RadioMessageType {
 **	with cell resolution. The COORD type is used for map coordinates that
 **	have a lepton resolution.
 */
-typedef unsigned long	COORDINATE;
+// COORDINATE — packed 32-bit cell coordinate.
+// Working hypothesis below:
+// Low 16 bits  = X position
+// High 16 bits = Y position
+// Packing confirmed from Distance_Coord assembly (FUNCTION.H)
+typedef unsigned long COORDINATE;
+// TODO: Phase 1.2 — replace with strongly typed struct:
+// struct Coordinate { uint16_t x; uint16_t y; };
 typedef signed short		CELL;
 
 typedef unsigned short	TARGET;
