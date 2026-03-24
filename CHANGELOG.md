@@ -145,7 +145,11 @@ binaries run fine on Windows 11 — this project targets the source.
   - Added the work packing macros, presumably from wwlib32 library
     - `MAKE_LONG`
     - `LOW_WORD`
+      - This macro is converted into constexpr for the type safety over macro text substitution
+        Name retained for call site compatibility
     - `HIGH_WORD`
+      - This macro is converted into constexpr for the type safety over macro text substitution
+        Name retained for call site compatibility
 
 ### Added
 - Added `network_stub.hpp` — Placeholder for any GCL, Westwood Chat-related

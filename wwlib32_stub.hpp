@@ -35,13 +35,13 @@ class GraphicBufferClass : public GraphicViewPortClass {};
     (static_cast<unsigned long>(static_cast<unsigned short>(hi))) << 16))
 #endif
 
-#ifndef LOW_WORD
-#define LOW_WORD(x)  (static_cast<unsigned short>((x) & 0xFFFF))
-#endif
+[[nodiscard]] constexpr unsigned short LOW_WORD(unsigned long value) noexcept {
+    return static_cast<unsigned short>(value & 0xFFFFu);
+}
 
-#ifndef HIGH_WORD
-#define HIGH_WORD(x) (static_cast<unsigned short>(((x) >> 16) & 0xFFFF))
-#endif
+[[nodiscard]] constexpr unsigned short HIGH_WORD(unsigned long value) noexcept {
+    return static_cast<unsigned short>((value >> 16) & 0xFFFFu);
+}
 
 // Facing calculation — originally from wwlib32.
 // TODO: Phase 1.2 — reimplement with std::atan2 based calculation.
