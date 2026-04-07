@@ -727,6 +727,11 @@ int Terrain_Cost(CELL cell, FacingType facing);
 /*
 **	Inline miscellaneous functions.
 */
+
+/*
+    TODO: Phase 1.2; convert C-style casts to C++-idiomatic casts.
+	                 Or, find a way to consolidate the functions into one header
+*/
 #define	XYP_COORD(x,y)	(((x)*ICON_LEPTON_W)/CELL_PIXEL_W + ((((y)*ICON_LEPTON_H)/CELL_PIXEL_H)<<16))
 inline FacingType Dir_Facing(DirType facing) {return (FacingType)(((unsigned char)(facing+0x10)&0xFF)>>5);}
 inline DirType Facing_Dir(FacingType facing) {return (DirType)((int)facing << 5);}
